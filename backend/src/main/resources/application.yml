@@ -7,6 +7,16 @@ spring:
     url: ***REMOVED***
     username: marketplace_admin
     password: ***REMOVED***
+  cloud:
+    azure:
+      active-directory:
+        enabled: true
+        profile:
+          tenant-id: ***REMOVED***
+        credential:
+          client-id: ***REMOVED***
+          client-secret: ***REMOVED***
+        app-id-uri: api://***REMOVED***
 
   jpa:
     hibernate:
