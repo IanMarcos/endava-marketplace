@@ -17,6 +17,14 @@ spring:
           client-id: ***REMOVED***
           client-secret: ***REMOVED***
         app-id-uri: api://***REMOVED***
+      storage:
+        account-name: endavamarketplaceimages
+        account-key: ***REMOVED***
+        endpoint: ***REMOVED***
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 20MB
 
   jpa:
     hibernate:
