@@ -3,8 +3,10 @@ logging:
     sql: debug
 
 server:
+  tomcat:
+    relaxed-query-chars: '|,{,},[,]'
   ssl:
-    key-store: ../certificates/springboot.jks
+    key-store: certificates/springboot.jks
     key-store-password: password
     key-store-type: jks
     key-alias: certificatex509
@@ -25,10 +27,15 @@ spring:
           client-id: ***REMOVED***
           client-secret: ***REMOVED***
         app-id-uri: api://***REMOVED***
+        authorization-clients:
+          graph:
+            scopes:
+              - https://graph.microsoft.com/User.Read
       storage:
         account-name: endavamarketplaceimages
         account-key: ***REMOVED***
         endpoint: ***REMOVED***
+
   servlet:
     multipart:
       max-file-size: 5MB
