@@ -7,6 +7,7 @@ import com.endava.marketplace.backend.exception.EntityNotFoundException;
 import com.endava.marketplace.backend.exception.NotEnoughPermissionsException;
 import com.endava.marketplace.backend.mapper.EndavanMapper;
 import com.endava.marketplace.backend.model.Endavan;
+import com.endava.marketplace.backend.model.Rating;
 import com.endava.marketplace.backend.repository.EndavanRepository;
 import com.endava.marketplace.backend.specification.EndavanSpecification;
 import jakarta.persistence.criteria.Predicate;
@@ -45,6 +46,8 @@ public class EndavanService {
         Endavan endavan = getEndavanInfo();
         Optional<Endavan> savedEndavan = endavanRepository.findEndavanByEmailIgnoreCase(endavan.getEmail());
         if (savedEndavan.isEmpty()){
+            Rating rating = new Rating(null, null, 0, endavan);
+            endavan.setRating(rating);
             return endavanMapper.toEndavanDTO(endavanRepository.save(endavan));
         }
         endavan = savedEndavan.get();
@@ -135,13 +138,14 @@ public class EndavanService {
             email = principal.getClaim("upn");
         }
 
-        return new Endavan(null, name, email, false, null, null, null);
+        return new Endavan(null, name, email, false, null, null, null, null);
     }
+
     protected Authentication getAuthentication(){
         return SecurityContextHolder.getContext().getAuthentication();
     }
 
-    protected Endavan loadEndavan(Long id) {
+    public Endavan loadEndavan(Long id) {
         Optional<Endavan> endavan = endavanRepository.findById(id);
         if(endavan.isEmpty()) {
             throw new EntityNotFoundException("Endavan with ID: " + id + " wasn't found");

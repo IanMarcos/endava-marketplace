@@ -2,11 +2,14 @@
 	import { computed, onBeforeMount, reactive, ref } from "vue";
 	import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 	import { useUserStore } from "@/stores/user";
+	import { useQuestionSection } from "@/stores/questionSection";
 	import StarsInput from "@/components/Inputs/StarsInput.vue";
+	import QuantitySelect from "@/components/Inputs/QuantitySelect.vue";
 	import ImageSelector from "@/components/Images/ImageSelector.vue";
+	import QuestionsSection from "@/components/QuestionsSection/BaseLayout.vue";
 	import GenericModal from "@/components/GenericModal.vue";
-	import { getListingById, getListingImages, postSale } from "../utils/axios";
-	import { getArticleOfSentence } from "@/utils/strings";
+	import { getListingById, getListingImages, postSale } from "@/utils/axios";
+	import { getArticleOfSentence, formatMoney } from "@/utils/strings";
 
 	const route = useRoute();
 	const router = useRouter();
@@ -16,7 +19,13 @@
 	const isUserSure = ref(false);
 	const modal = reactive({ title: "", description: null, open: false });
 	const user = useUserStore();
-	const isUserTheSeller = computed(() => listing.value.seller.id === user.id);
+	const questionSection = useQuestionSection();
+	const isUserTheSeller = computed(
+		() => listing?.value?.seller?.id === user.id
+	);
+
+	questionSection.listingId = Number(listingId.value);
+	questionSection.isUserTheSeller = isUserTheSeller;
 
 	onBeforeMount(async () => {
 		if (Number.isNaN(Number(listingId.value))) {
@@ -86,16 +95,8 @@
 		isUserSure.value = false;
 	};
 
-	const handleQuantityUpdate = $event => {
-		const userInput = Number($event.target.value);
-		desiredQuantity.value = userInput;
-
-		if (userInput < 1) {
-			desiredQuantity.value = 1;
-		}
-		if (userInput > listing.value.stock) {
-			desiredQuantity.value = listing.value.stock;
-		}
+	const handleQuantityUpdate = payload => {
+		desiredQuantity.value = payload;
 	};
 
 	const makePurchase = async () => {
@@ -160,19 +161,19 @@
 		</div>
 	</generic-modal>
 
-	<main class="gah3-x-4 mx-14 mb-12 mt-32 grid grid-cols-1 lg:grid-cols-7">
+	<main class="gah3-x-4 mx-14 my-12 grid grid-cols-1 lg:grid-cols-7">
 		<image-selector
 			v-if="listing && listing.images && listing.images.length > 0"
 			:images="listing.images"
 			styles="col-span-3 lg:col-span-4 pr-2"
 		/>
-		<div
+		<section
 			class="col-span-3 lg:col-span-3"
 			v-if="listing && listing.name"
 		>
 			<h1>{{ listing.name }}</h1>
 			<div class="text-lg font-semibold text-endava-600">
-				${{ listing.price }}
+				{{ formatMoney(listing.price) }}
 			</div>
 			<div class="flex gap-2">
 				<span>
@@ -199,16 +200,14 @@
 			<form
 				v-if="!isUserTheSeller && listing.stock > 0"
 				@submit.prevent="modal.open = true"
+				id="purchase-form"
 			>
 				<div class="my-4">
 					<span class="mr-4">Quantity</span>
-					<input
-						type="number"
-						:value="desiredQuantity"
-						:disabled="listing.stock === 1"
-						class="h-8 w-12 pr-0"
-						@change="handleQuantityUpdate"
-					/>
+					<quantity-select
+						:stock="listing.stock"
+						@quantity-selected="handleQuantityUpdate"
+					></quantity-select>
 				</div>
 				<button
 					type="submit"
@@ -217,6 +216,9 @@
 					Purchase
 				</button>
 			</form>
-		</div>
+		</section>
 	</main>
+	<section class="flex w-full flex-col items-center">
+		<questions-section></questions-section>
+	</section>
 </template>

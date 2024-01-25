@@ -32,6 +32,25 @@ const makeGetRequest = async route => {
 	}
 };
 
+const makePostRequest = async (route, data) => {
+	try {
+		const config = {
+			headers: getHeadersForRequest(),
+		};
+
+		const response = await axios.post(route, data, config);
+		const { status } = response;
+
+		if (status === 201 || status === 200) {
+			return { data: response.data, msg: "Succesfull operation" };
+		} else {
+			return { error: true, msg: "Failed operation" };
+		}
+	} catch (error) {
+		return handleCatch(error);
+	}
+};
+
 export const postNewListing = async data => {
 	try {
 		let url = getAPIURL();
@@ -163,6 +182,12 @@ export const postUser = async () => {
 	}
 };
 
+export const getMySales = async (params = {}) => {
+	let url = `${getAPIURL()}/api/sales/my-sales`;
+	url = addParamsToURL(url, params);
+	return await makeGetRequest(url);
+};
+
 export const getSellerSales = async id => {
 	try {
 		const url = `${getAPIURL()}/api/sales/seller/${id}`;
@@ -205,6 +230,12 @@ export const getUserPurchases = async id => {
 
 export const getListingById = async id => {
 	const url = `${getAPIURL()}/api/listings/${id}`;
+	return await makeGetRequest(url);
+};
+
+export const getUserListings = async (params = {}) => {
+	let url = `${getAPIURL()}/api/listings/my-listings`;
+	url = addParamsToURL(url, params);
 	return await makeGetRequest(url);
 };
 
@@ -280,7 +311,6 @@ export const getProfileImage = async id => {
 	try {
 		const config = {
 			headers: getHeadersForRequest(),
-			responseType: "arraybuffer",
 		};
 
 		const response = await axios.get(url, config);
@@ -299,6 +329,11 @@ export const getAllCategories = async () => {
 
 export const getActiveCategories = async () => {
 	const url = `${getAPIURL()}/api/categories/active`;
+	return await makeGetRequest(url);
+};
+
+export const getActiveTags = async () => {
+	const url = `${getAPIURL()}/api/tags`;
 	return await makeGetRequest(url);
 };
 
@@ -349,6 +384,36 @@ export const patchDisableCategory = async id => {
 	try {
 		const response = await axios.patch(url, {}, config);
 		return response.data;
+	} catch (error) {
+		return handleCatch(error);
+	}
+};
+
+// QUESTIONS
+
+export const getListingQuestions = async id => {
+	const url = `${getAPIURL()}/api/questions/listing/${id}`;
+	return await makeGetRequest(url);
+};
+
+export const postQuestion = async data => {
+	const url = `${getAPIURL()}/api/questions`;
+	return await makePostRequest(url, data);
+};
+
+export const postAnswer = async answerData => {
+	const url = `${getAPIURL()}/api/questions/answer`;
+	const config = {
+		headers: getHeadersForRequest(),
+	};
+
+	try {
+		const { data, status } = await axios.patch(url, answerData, config);
+		if (status === 200 || status === 201) {
+			return { data };
+		}
+
+		return { error: true };
 	} catch (error) {
 		return handleCatch(error);
 	}

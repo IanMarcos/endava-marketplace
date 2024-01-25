@@ -1,19 +1,12 @@
 <script setup>
-	import { onBeforeMount } from "vue";
 	import { useUserStore } from "@/stores/user";
-	import useAdminUser from "@/composables/useAdminUser";
 
-	const { userIsAdmin, setUserIsAdmin } = useAdminUser();
 	const user = useUserStore();
-
-	onBeforeMount(() => {
-		setUserIsAdmin();
-	});
 </script>
 
 <template>
 	<div
-		class="m-3 flex w-full flex-col items-center justify-center gap-6 lg:flex-row"
+		class="flex w-full flex-col items-center justify-center gap-6 lg:flex-row"
 	>
 		<img
 			class="h-auto w-[60vw] max-w-[16rem] rounded-full lg:w-1/2"
@@ -26,11 +19,12 @@
 				{{ user.email }}
 			</p>
 			<router-link
-				v-if="userIsAdmin"
-				to="/admin-panel"
-				class="endava mt-4 block w-full p-2 text-center"
-				>Admin Panel</router-link
+				v-if="user.isAdmin"
+				to="/admin-panel/general"
+				class="endava mt-4 block w-full p-2 text-center focus:outline-offset-4 focus:outline-blue-500"
 			>
+				Admin Panel
+			</router-link>
 		</div>
 	</div>
 </template>

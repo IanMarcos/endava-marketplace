@@ -16,7 +16,7 @@
 	let searchTimeout;
 
 	const handleEsc = () => {
-		// suggestionListBox.value = false;
+		suggestionListBox.value = false;
 		refInput.value.blur();
 	};
 
@@ -105,13 +105,14 @@
 		ref="refInput"
 		id="icon"
 		name="searchbox"
-		class="peer block w-96 rounded-md border-gray-200 bg-white/70 px-4 py-2 pl-11 text-sm font-normal shadow-sm placeholder:italic placeholder:text-gray-500 focus:z-10 focus:border-gray-200 focus:bg-white focus:ring-0"
-		placeholder="Search..."
+		class="peer block w-96 rounded-md border-gray-200 bg-white/70 px-4 py-2 pl-11 text-sm font-normal shadow-sm placeholder:text-gray-500 focus:z-10 focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500"
+		placeholder="Search"
 		@keydown.down="handleArrowDown"
 		@keydown.up="handleArrowUp"
 		@keydown.esc="handleEsc"
 		@keydown.enter="handleEnter"
 		@focusin="suggestionListBox = true"
+		@focusout="suggestionListBox = false"
 		v-model="searchInput"
 		autocomplete="off"
 	/>

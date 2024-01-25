@@ -62,8 +62,8 @@ public class SaleController {
             tags = {"Sale"}
     )
     @GetMapping("/buyer/{id}")
-    public Set<SaleByBuyerDTO> getSalesByBuyerId(@PathVariable Long id) {
-        return saleService.findSalesByBuyerId(id);
+    public Set<ListedSaleDTO> getSalesByBuyerId(@PathVariable Long id) {
+        return saleService.findSales(id, false);
     }
 
     @Operation(
@@ -72,8 +72,8 @@ public class SaleController {
             tags = {"Sale"}
     )
     @GetMapping("/seller/{id}")
-    public Set<SaleBySellerDTO> getSalesBySellerId(@PathVariable Long id) {
-        return saleService.findSalesBySellerId(id);
+    public Set<ListedSaleDTO> getSalesBySellerId(@PathVariable Long id) {
+        return saleService.findSales(id, true);
     }
 
     @Operation(
@@ -102,5 +102,21 @@ public class SaleController {
     @PatchMapping("/{id}/fulfill")
     public ResponseEntity<SaleDTO> fulfillSale(@PathVariable Long id) {
         return ResponseEntity.ok(saleService.updateSaleStatus(id, "Fulfilled"));
+    }
+
+
+    @Operation(
+            summary = "Rates a Sale",
+            description = "Updates the rating of a sale to the given value. When a sale is rated the rating score of the seller is also updated",
+            tags = {"Sale"}
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ok", content = {@Content(schema = @Schema(implementation = SaleDTO.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", description = "Sale with given Id was not found", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "409", description = "Sale is pending and cannot be rated or is already rated", content = { @Content(schema = @Schema()) })
+    })
+    @PatchMapping("/{id}/rate/{rating}")
+    public ResponseEntity<SaleDTO> rateSale(@PathVariable Long id, @PathVariable Integer rating) {
+        return ResponseEntity.ok(saleService.rateSale(id, rating));
     }
 }

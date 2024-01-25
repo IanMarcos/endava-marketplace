@@ -15,4 +15,6 @@ public class EndavanDTO {
     private String name;
 
     private String email;
+
+    private RatingDTO rating;
 }

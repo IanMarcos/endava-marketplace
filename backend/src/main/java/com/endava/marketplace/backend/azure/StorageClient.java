@@ -51,7 +51,7 @@ public class StorageClient {
     }
 
     public void uploadImages(List<MultipartFile> images, Long listingId) throws IOException {
-        int count = 1;
+        int count  = fetchImagesURLS(listingId).size() + 1;
 
         for (MultipartFile image : images) {
             String contentType = image.getContentType();
@@ -96,7 +96,7 @@ public class StorageClient {
     }
 
     public String fetchThumbnailURL(Long id) {
-        return thumbsClient.getBlobClient(String.format("%d_thumb", id)).getBlobUrl();
+        return thumbsClient.getBlobClient(String.format("%d_thumb", id)).exists() ? thumbsClient.getBlobClient(String.format("%d_thumb", id)).getBlobUrl() : null;
     }
 
     private InputStream createThumbnail(MultipartFile image, String extension) throws IOException {

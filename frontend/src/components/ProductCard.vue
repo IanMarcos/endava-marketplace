@@ -1,6 +1,6 @@
 <template>
 	<router-link
-		class="h-64 w-52"
+		class="h-64 w-52 rounded-xl focus-visible:outline-offset-0 focus-visible:outline-blue-500"
 		:to="'/listings/' + cardInfo.id"
 	>
 		<div
@@ -45,7 +45,6 @@
 		const response = await getListingThumbanil(props.cardInfo.id);
 		if (response.error) {
 			// error
-			console.log(response.error);
 		} else {
 			imageSrc.value = response.data;
 		}

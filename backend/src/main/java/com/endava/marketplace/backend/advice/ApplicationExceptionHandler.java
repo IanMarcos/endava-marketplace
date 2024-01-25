@@ -42,6 +42,22 @@ public class ApplicationExceptionHandler {
         return errorMap;
     }
 
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    @ExceptionHandler(value = {NoAttributeDefinedException.class})
+    public Map<String, String> noAttributeDefinedException(NoAttributeDefinedException ex) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("error", ex.getMessage());
+        return errorMap;
+    }
+
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    @ExceptionHandler(value = {InvalidStatusException.class})
+    public Map<String, String> invalidStatusException(InvalidStatusException ex) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("error", ex.getMessage());
+        return errorMap;
+    }
+
     @ResponseStatus(value = HttpStatus.FORBIDDEN)
     @ExceptionHandler(value = {NotEnoughPermissionsException.class})
     public Map<String, String> notEnoughPermissionsException(NotEnoughPermissionsException ex) {

@@ -4,22 +4,19 @@
 	import ProductCard from "@/components/ProductCard.vue";
 	import SkeletonCard from "@/components/SkeletonCard.vue";
 	import { useProductStore } from "@/stores/products";
+	import { useProductsSearchStore } from "@/stores/productsSearch";
 	const productsList = useProductStore();
+	const productsSearch = useProductsSearchStore();
 
 	const isLoading = ref(true);
 	const page = ref(1);
-	const totalPages = ref(1);
-	const noMoreProducts = ref(false);
-
-	let Baseurl = `${import.meta.env.VITE_API_URL}/api/listings/search/get`;
+	const totalPages = ref(2);
 
 	onMounted(async () => {
 		const response = await getListingsSearch();
 		if (response.error) {
 			// error
 		} else {
-			// ***
-			// productCards.value = response.data.content;
 			productsList.update(response.data.content);
 			totalPages.value = response.data.totalPages;
 			setTimeout(() => {
@@ -29,17 +26,23 @@
 	});
 
 	const handleLoadMore = async () => {
-		if (page.value < totalPages.value) {
-			page.value += 1;
-			const response = await getListingsSearch({ page: page.value });
+		page.value += 1;
+		let params = {};
 
-			productsList.update([
-				...productsList.productCards,
-				...response.data.content,
-			]);
-		} else {
-			noMoreProducts.value = true;
+		if (productsSearch.search.value) {
+			params.name = productsSearch.search.value;
 		}
+		if (productsSearch.categoryId.value) {
+			params.category = productsSearch.categoryId.value;
+		}
+		params.page = page.value;
+
+		const response = await getListingsSearch(params);
+
+		productsList.update([
+			...productsList.productCards,
+			...response.data.content,
+		]);
 	};
 </script>
 
@@ -72,17 +75,11 @@
 		</div>
 	</main>
 	<button
-		v-if="!noMoreProducts"
+		v-if="page < totalPages && !isLoading"
 		type="button"
 		@click="handleLoadMore"
-		class="endava mx-auto block items-center justify-center gap-2 rounded-md border px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all"
+		class="endava mx-auto block items-center justify-center gap-2 rounded-md border px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all focus:outline-blue-500"
 	>
 		Load More
 	</button>
-	<div
-		v-else
-		class="mt-10 text-center italic text-gray-500"
-	>
-		No more items...
-	</div>
 </template>
